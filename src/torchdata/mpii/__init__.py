@@ -102,8 +102,16 @@ def transform_keypoints(keypoints, matrix):
     """Transform 2D keypoints using the given 3x3 transformation matrix."""
     pad_width = [(0, 0)] * (np.ndim(keypoints) - 1) + [(0, 1)]
     keypoints = np.pad(keypoints, pad_width, 'constant', constant_values=1)
-    transformed_keypoints = np.matmul(keypoints, np.transpose(matrix))[..., :2]
+    transformed_keypoints = np.matmul(keypoints, matrix.T)[..., :2]
     return transformed_keypoints
+
+
+def normalised_coordinate_transform(size):
+    return np.array([
+        [2 / size, 0, 1 / size - 1],
+        [0, 2 / size, 1 / size - 1],
+        [0, 0, 1],
+    ])
 
 
 class MpiiData:
@@ -204,9 +212,15 @@ class MpiiData:
         """Build the matrix which transforms points from original to cropped image space."""
         bb = self.get_bounding_box(index)
         k = size / (bb[2] - bb[0])
-        transform_matrix = np.array([
-            [k, 0, -bb[0] * k],
-            [0, k, -bb[1] * k],
-            [0, 0,          1],
-        ])
-        return transform_matrix
+        m = np.eye(3, 3)
+        m = np.matmul([
+            [1, 0, -bb[0]],
+            [0, 1, -bb[1]],
+            [0, 0, 1],
+        ], m)
+        m = np.matmul([
+            [k, 0, k / 2 - 0.5],
+            [0, k, k / 2 - 0.5],
+            [0, 0, 1],
+        ], m)
+        return m

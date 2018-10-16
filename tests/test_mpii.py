@@ -29,7 +29,7 @@ def test_cropped_keypoints(mpii_data_dir):
     matrix = data.get_crop_transform(index)
     keypoints = mpii.transform_keypoints(data.keypoints[index], matrix)
     assert keypoints.shape == (16, 2)
-    np.testing.assert_allclose(keypoints[0], np.array([23.45942086, 79.38027377]))
+    np.testing.assert_allclose(keypoints[0], np.array([23.09556, 79.016413]))
 
 
 def test_load_cropped_image(mpii_data_dir):
@@ -37,6 +37,17 @@ def test_load_cropped_image(mpii_data_dir):
     index = 0
     image = data.load_cropped_image(index, size=512)
     assert image.size == (512, 512)
+
+
+def test_normalised_coordinate_transform():
+    matrix = mpii.normalised_coordinate_transform(3)
+    mapping = [
+        ([-0.5, -0.5], [-1.0, -1.0]),
+        ([2.5, 2.5], [1.0, 1.0]),
+        ([1.0, 1.0], [0.0, 0.0])
+    ]
+    for p, q in mapping:
+        np.testing.assert_almost_equal(mpii.transform_keypoints(p, matrix), q)
 
 
 # def test_mpii_data():
