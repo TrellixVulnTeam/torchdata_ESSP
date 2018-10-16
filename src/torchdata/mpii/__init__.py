@@ -19,7 +19,8 @@ MPII_Joint_Names = ['right_ankle', 'right_knee', 'right_hip', 'left_hip',
 MPII_Joint_Parents = [1, 2, 6, 6, 3, 4, 6, 6, 7, 8, 11, 12, 8, 8, 13, 14]
 MPII_Joint_Horizontal_Flips = [5, 4, 3, 2, 1, 0, 6, 7, 8, 9, 15, 14, 13, 12, 11, 10]
 
-# RGB channel statistics for images in the training set
+# Per-channel mean and standard deviation values for input images
+# Channel order: red, green, blue
 MPII_Image_Mean = [0.440442830324173, 0.4440267086029053, 0.4326828420162201]
 MPII_Image_Stddev = [0.24576245248317719, 0.24096255004405975, 0.2468130737543106]
 
@@ -152,6 +153,17 @@ class MpiiData:
 
     def __len__(self):
         return len(self.image_indices)
+
+    def subset_indices(self, subset):
+        if subset == 'train':
+            return self.train_indices
+        if subset == 'val':
+            return self.val_indices
+        if subset == 'trainval':
+            return self.train_indices + self.val_indices
+        if subset == 'test':
+            return self.test_indices
+        raise Exception('unrecognised subset: {}'.format(subset))
 
     def load_image(self, index):
         """Load the full original image."""
