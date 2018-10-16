@@ -208,3 +208,8 @@ class MpiiData:
             [0, 0,          1],
         ])
         return transform_matrix
+
+    def get_strict_keypoint_mask(self, index):
+        keypoints = self.keypoints[index]
+        coord_prod = keypoints[:, 0] * keypoints[:, 1]
+        return self.keypoint_masks[index] * np.not_equal(coord_prod, 0)

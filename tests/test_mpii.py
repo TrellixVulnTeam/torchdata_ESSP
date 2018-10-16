@@ -12,9 +12,9 @@ def test_validate_mpii_data_dir(mpii_data_dir, tmpdir):
 
 def test_subset_splits(mpii_data_dir):
     data = mpii.MpiiData(mpii_data_dir)
-    assert data.train_indices[:12] == [5, 6, 7, 8, 9, 11]
-    assert data.val_indices[:12] == [10]
-    assert data.test_indices[:12] == [0, 1, 2, 3, 4]
+    assert [e for e in data.train_indices if e < 12] == [5, 6, 7, 8, 9, 11]
+    assert [e for e in data.val_indices if e < 12] == [10]
+    assert [e for e in data.test_indices if e < 12] == [0, 1, 2, 3, 4]
 
 
 def test_get_bounding_box(mpii_data_dir):
