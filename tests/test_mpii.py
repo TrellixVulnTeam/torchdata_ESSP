@@ -28,6 +28,7 @@ def test_cropped_keypoints(mpii_data_dir):
     index = 7
     matrix = data.get_crop_transform(index)
     keypoints = mpii.transform_keypoints(data.keypoints[index], matrix)
+    assert keypoints.shape == (16, 2)
     np.testing.assert_allclose(keypoints[0], np.array([23.45942086, 79.38027377]))
 
 

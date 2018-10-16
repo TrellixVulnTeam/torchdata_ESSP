@@ -100,7 +100,8 @@ def install_mpii_dataset(data_dir, quiet=False, force=False):
 
 def transform_keypoints(keypoints, matrix):
     """Transform 2D keypoints using the given 3x3 transformation matrix."""
-    keypoints = np.pad(keypoints, (0, 1), 'constant', constant_values=1)
+    pad_width = [(0, 0)] * (np.ndim(keypoints) - 1) + [(0, 1)]
+    keypoints = np.pad(keypoints, pad_width, 'constant', constant_values=1)
     transformed_keypoints = np.matmul(keypoints, np.transpose(matrix))[..., :2]
     return transformed_keypoints
 
