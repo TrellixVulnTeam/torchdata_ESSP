@@ -125,7 +125,8 @@ class MpiiData:
             self.subject_centers = f['/center'].value.astype(np.int32)
             self.subject_scales = f['/scale'].value.astype(np.float64)
             self.keypoints = f['/part'].value.astype(np.float64)
-            self.keypoint_masks = f['/visible'].value.astype(np.uint8)
+            self.keypoint_masks = np.not_equal(self.keypoints[..., 0] * self.keypoints[..., 1], 0)
+            self.keypoint_visibilities = f['/visible'].value.astype(np.uint8)
             self.head_lengths = f['/normalize'].value.astype(np.float64)
 
         with h5py.File(self.data_dir / 'valid.h5', 'r') as f:
@@ -208,8 +209,3 @@ class MpiiData:
             [0, 0,          1],
         ])
         return transform_matrix
-
-    def get_strict_keypoint_mask(self, index):
-        keypoints = self.keypoints[index]
-        coord_prod = keypoints[:, 0] * keypoints[:, 1]
-        return self.keypoint_masks[index] * np.not_equal(coord_prod, 0)

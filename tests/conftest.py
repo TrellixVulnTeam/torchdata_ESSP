@@ -24,7 +24,7 @@ def mpii_data_dir(tmpdir_factory):
                                4.92848050, 3.02104618, 2.47211650, 5.64127645,
                                6.07105131, 5.72816201, 4.71848789, 4.73408745])
     keypoints = np.zeros((12, 16, 2))
-    keypoint_masks = np.ones((12, 16))
+    keypoint_visibilities = np.ones((12, 16))
     head_lengths = np.array([  1.        ,   1.        ,   1.        ,   1.        ,
                                1.        ,  75.52615441,  61.80291255, 141.03191128,
                              151.77628273, 143.20405022, 117.96219733, 118.35218629])
@@ -36,7 +36,7 @@ def mpii_data_dir(tmpdir_factory):
         f.create_dataset('/center', dtype='<i4', data=subject_centers)
         f.create_dataset('/scale', dtype='<f8', data=subject_scales)
         f.create_dataset('/part', dtype='<f8', data=keypoints)
-        f.create_dataset('/visible', dtype='<f8', data=keypoint_masks)
+        f.create_dataset('/visible', dtype='<f8', data=keypoint_visibilities)
         f.create_dataset('/normalize', dtype='<f8', data=head_lengths)
 
     with h5py.File(data_dir.join('valid.h5'), 'w') as f:
