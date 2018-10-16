@@ -131,7 +131,7 @@ class MpiiData:
             self.is_train = f['/istrain'].value.astype(np.bool)
             self.image_names = [imgname.tostring().decode('ascii').split('\0')[0]
                                 for imgname in f['/imgname'].value.astype(np.uint8)]
-            self.subject_centers = f['/center'].value.astype(np.int32)
+            self.subject_centres = f['/center'].value.astype(np.int32)
             self.subject_scales = f['/scale'].value.astype(np.float64)
             self.keypoints = f['/part'].value.astype(np.float64)
             self.keypoint_masks = np.not_equal(self.keypoints[..., 0] * self.keypoints[..., 1], 0)
@@ -193,8 +193,8 @@ class MpiiData:
             Bounding box coordinates as a (left, upper, right, lower) tuple.
         """
         scale = self.subject_scales[index]
-        cx = self.subject_centers[index, 0]
-        cy = self.subject_centers[index, 1] + scale * 15
+        cx = self.subject_centres[index, 0]
+        cy = self.subject_centres[index, 1] + scale * 15
         half_size = (scale * 125)  # = (scale * 1.25 * 200) / 2
         return (cx - half_size, cy - half_size, cx + half_size, cy + half_size)
 

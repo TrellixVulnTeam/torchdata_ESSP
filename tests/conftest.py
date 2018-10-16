@@ -17,7 +17,7 @@ def mpii_data_dir(tmpdir_factory):
     imgnames = np.zeros((12, 16))
     for i, image_name in enumerate(image_names):
         imgnames[i, :len(image_name)] = np.frombuffer(image_name.encode('ascii'), dtype=np.uint8)
-    subject_centers = np.array([[ 601,  380], [ 881,  394], [ 338,  210], [ 619,  350],
+    subject_centres = np.array([[ 601,  380], [ 881,  394], [ 338,  210], [ 619,  350],
                                 [ 684,  309], [ 594,  257], [ 952,  222], [ 619,  329],
                                 [1010,  412], [ 133,  315], [ 966,  340], [ 489,  383]])
     subject_scales = np.array([3.88073395, 8.07816613, 8.90412938, 4.32666153,
@@ -33,7 +33,7 @@ def mpii_data_dir(tmpdir_factory):
         f.create_dataset('/person', dtype='<i8', data=person_indices)
         f.create_dataset('/istrain', dtype='<i8', data=is_train)
         f.create_dataset('/imgname', dtype='<f8', data=imgnames)
-        f.create_dataset('/center', dtype='<i4', data=subject_centers)
+        f.create_dataset('/center', dtype='<i4', data=subject_centres)
         f.create_dataset('/scale', dtype='<f8', data=subject_scales)
         f.create_dataset('/part', dtype='<f8', data=keypoints)
         f.create_dataset('/visible', dtype='<f8', data=keypoint_visibilities)
