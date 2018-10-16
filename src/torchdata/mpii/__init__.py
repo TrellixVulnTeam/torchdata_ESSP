@@ -134,7 +134,8 @@ class MpiiData:
             self.subject_centres = f['/center'].value.astype(np.int32)
             self.subject_scales = f['/scale'].value.astype(np.float64)
             self.keypoints = f['/part'].value.astype(np.float64)
-            self.keypoint_masks = np.not_equal(self.keypoints[..., 0] * self.keypoints[..., 1], 0)
+            tmp = self.keypoints[..., 0] * self.keypoints[..., 1]
+            self.keypoint_masks = np.not_equal(tmp, 0, out=np.ndarray(tmp.shape, dtype=np.uint8))
             self.keypoint_visibilities = f['/visible'].value.astype(np.uint8)
             self.head_lengths = f['/normalize'].value.astype(np.float64)
 
