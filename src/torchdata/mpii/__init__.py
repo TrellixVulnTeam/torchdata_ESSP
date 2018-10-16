@@ -224,3 +224,8 @@ class MpiiData:
             [0, 0, 1],
         ], m)
         return m
+
+    def get_normalised_crop_transform(self, index):
+        size = 256  # This value doesn't actually matter, it cancels out
+        return np.matmul(normalised_coordinate_transform(size),
+                         self.get_crop_transform(index, size))
