@@ -199,24 +199,41 @@ class MpiiData:
         half_size = (scale * 125)  # = (scale * 1.25 * 200) / 2
         return (cx - half_size, cy - half_size, cx + half_size, cy + half_size)
 
-    def load_cropped_image(self, index, size=384):
+    def load_cropped_image(self, index, size=384, margin=0):
         """Load a cropped version of the image centred on the subject."""
+
+        # +---------------+
+        # |               |
+        # |margin         |
+        # |     +---+     |
+        # |<--->|BB |     |
+        # |     +---+     |
+        # |    >|   |<    |
+        # |     size      |
+        # +---------------+
         bb = self.get_bounding_box(index)
+        pad = margin * (bb[2] - bb[1]) / size
+        crop_box = [bb[0] - pad, bb[1] - pad, bb[2] + pad, bb[3] + pad]
+        out_size = size + 2 * margin
         image = self.load_image(index)
-        image = image.crop(bb)
-        image.thumbnail((size, size), PIL.Image.BILINEAR)
-        if image.width != size:
-            image = image.resize((size, size), PIL.Image.BILINEAR)
+        image = image.crop(crop_box)
+        image.thumbnail((out_size, out_size), PIL.Image.BILINEAR)
+        if image.width != out_size:
+            image = image.resize((out_size, out_size), PIL.Image.BILINEAR)
         return image
 
-    def get_crop_transform(self, index, size=384):
+    def get_crop_transform(self, index, size=384, margin=0):
         """Build the matrix which transforms points from original to cropped image space."""
+
         bb = self.get_bounding_box(index)
-        k = size / (bb[2] - bb[0])
+        pad = margin * (bb[2] - bb[1]) / size
+        crop_box = [bb[0] - pad, bb[1] - pad, bb[2] + pad, bb[3] + pad]
+        out_size = size + 2 * margin
+        k = out_size / (crop_box[2] - crop_box[0])
         m = np.eye(3, 3)
         m = np.matmul([
-            [1, 0, -bb[0]],
-            [0, 1, -bb[1]],
+            [1, 0, -crop_box[0]],
+            [0, 1, -crop_box[1]],
             [0, 0, 1],
         ], m)
         m = np.matmul([
@@ -226,7 +243,18 @@ class MpiiData:
         ], m)
         return m
 
-    def get_normalised_crop_transform(self, index):
-        size = 256  # This value doesn't actually matter, it cancels out
-        return np.matmul(normalised_coordinate_transform(size),
-                         self.get_crop_transform(index, size))
+    def get_bb_transform(self, index):
+        """Get the matrix for image space to normalised bounding box space transformation.
+
+        In normalised space, (-1, -1) is the top-left corner of the bounding box, and (1, 1) is the
+        bottom-right.
+        """
+
+        bb = self.get_bounding_box(index)
+        m = np.eye(3, 3)
+        m = np.matmul([
+            [1, 0, -bb[0]],
+            [0, 1, -bb[1]],
+            [0, 0, 1],
+        ], m)
+        return np.matmul(normalised_coordinate_transform(bb[2] - bb[0]), m)

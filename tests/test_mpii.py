@@ -55,8 +55,9 @@ def test_normalised_coordinate_transform():
 #
 #     data = mpii.MpiiData('/data/mpii')
 #     index = 7
-#     image = data.load_cropped_image(index)
-#     keypoints = mpii.transform_keypoints(data.keypoints[index], data.get_crop_transform(index))
+#     image = data.load_cropped_image(index, size=384, margin=83)
+#     trans = data.get_crop_transform(index, size=384, margin=83)
+#     keypoints = mpii.transform_keypoints(data.keypoints[index], trans)
 #     PIL.ImageDraw.Draw(image).line([*keypoints[mpii.MPII_Joint_Names.index('head_top')],
 #                                     *keypoints[mpii.MPII_Joint_Names.index('neck')]])
 #     image.show()
