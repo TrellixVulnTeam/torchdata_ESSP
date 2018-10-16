@@ -212,7 +212,7 @@ class MpiiData:
         # |     size      |
         # +---------------+
         bb = self.get_bounding_box(index)
-        pad = margin * (bb[2] - bb[1]) / size
+        pad = margin * (bb[2] - bb[0]) / size
         crop_box = [bb[0] - pad, bb[1] - pad, bb[2] + pad, bb[3] + pad]
         out_size = size + 2 * margin
         image = self.load_image(index)
