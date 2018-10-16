@@ -19,6 +19,10 @@ MPII_Joint_Names = ['right_ankle', 'right_knee', 'right_hip', 'left_hip',
 MPII_Joint_Parents = [1, 2, 6, 6, 3, 4, 6, 6, 7, 8, 11, 12, 8, 8, 13, 14]
 MPII_Joint_Horizontal_Flips = [5, 4, 3, 2, 1, 0, 6, 7, 8, 9, 15, 14, 13, 12, 11, 10]
 
+# RGB channel statistics for images in the training set
+MPII_Image_Mean = [0.440442830324173, 0.4440267086029053, 0.4326828420162201]
+MPII_Image_Stddev = [0.24576245248317719, 0.24096255004405975, 0.2468130737543106]
+
 MPII_Files = {
     # Archive file containing the images (12 GiB)
     'mpii_human_pose_v1.tar.gz': {
@@ -104,15 +108,14 @@ class MpiiData:
     """A helper class for working with MPII Human Pose data.
 
     Args:
-        data_dir (Path): The directory containing installed MPII data.
+        data_dir: The directory containing installed MPII data.
     """
 
     def __init__(self, data_dir):
-        data_dir = Path(data_dir)
-        validate_mpii_data_dir(data_dir)
-        self.data_dir = data_dir
+        self.data_dir = Path(data_dir)
+        validate_mpii_data_dir(self.data_dir)
 
-        with h5py.File(data_dir / 'annot.h5', 'r') as f:
+        with h5py.File(self.data_dir / 'annot.h5', 'r') as f:
             self.image_indices = f['/index'].value.astype(np.uint32)
             self.person_indices = f['/person'].value.astype(np.uint32)
             self.is_train = f['/istrain'].value.astype(np.bool)
@@ -124,7 +127,7 @@ class MpiiData:
             self.keypoint_masks = f['/visible'].value.astype(np.uint8)
             self.head_lengths = f['/normalize'].value.astype(np.float64)
 
-        with h5py.File(data_dir / 'valid.h5', 'r') as f:
+        with h5py.File(self.data_dir / 'valid.h5', 'r') as f:
             val_image_indices = f['/index'].value.astype(np.uint32)
             val_person_indices = f['/person'].value.astype(np.uint32)
 
@@ -178,9 +181,9 @@ class MpiiData:
         bb = self.get_bounding_box(index)
         image = self.load_image(index)
         image = image.crop(bb)
-        image.thumbnail((size, size))
+        image.thumbnail((size, size), PIL.Image.BILINEAR)
         if image.width != size:
-            image = image.resize((size, size))
+            image = image.resize((size, size), PIL.Image.BILINEAR)
         return image
 
     def get_crop_transform(self, index, size=384):
