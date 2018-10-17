@@ -1,11 +1,13 @@
+import os
+
+import PIL.Image
 import h5py
 import numpy as np
 import pytest
-import PIL.Image
 
 
 @pytest.fixture(scope="session")
-def mpii_data_dir(tmpdir_factory):
+def fake_mpii_data_dir(tmpdir_factory):
     data_dir = tmpdir_factory.mktemp('mpii-data')
 
     image_indices = np.array([0, 1, 1, 2, 3, 4, 4, 5, 5, 5, 6, 6])
@@ -49,3 +51,11 @@ def mpii_data_dir(tmpdir_factory):
             PIL.Image.new('RGB', (1280, 720)).save(f)
 
     return data_dir
+
+
+@pytest.fixture(scope="session")
+def mpii_data_dir():
+    data_dir = os.environ.get('TORCHDATA_MPII_DATA_DIR', None)
+    if data_dir is not None and os.path.isdir(data_dir):
+        return data_dir
+    pytest.skip('requires MPII data')

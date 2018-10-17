@@ -7,8 +7,24 @@
 
 ## Configuration
 
-Setting a cache directory with the `TORCHDATA_CACHE` environment variable allows torchdata to
-retain downloaded files.
+Setting the `TORCHDATA_CACHE` environment variable causes torchdata to
+retain downloaded files by storing them in the specified directory.
+
+
+## Running tests
+
+Some unit tests require access to a locally installed copy of the MPII Human Pose
+dataset. To run these tests, set the `TORCHDATA_MPII_DATA_DIR` environment variable
+to the appropriate location. If the environment variable is not set, dependent tests
+will be skipped.
+
+```bash
+# Run all tests
+$ TORCHDATA_MPII_DATA_DIR=/path/to/mpii/data pytest
+
+# Run self-contained tests only
+$ pytest
+```
 
 
 ## License
