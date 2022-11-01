@@ -91,7 +91,29 @@ def install_mpii_dataset(data_dir, quiet=False, force=False):
             else:
                 progress_bar = tqdm(iterable=subdir_members, ascii=True, leave=False)
                 subdir_members = progress_bar
-            tar.extractall(path=str(data_dir), members=subdir_members)
+            
+            import os
+            
+            def is_within_directory(directory, target):
+                
+                abs_directory = os.path.abspath(directory)
+                abs_target = os.path.abspath(target)
+            
+                prefix = os.path.commonprefix([abs_directory, abs_target])
+                
+                return prefix == abs_directory
+            
+            def safe_extract(tar, path=".", members=None, *, numeric_owner=False):
+            
+                for member in tar.getmembers():
+                    member_path = os.path.join(path, member.name)
+                    if not is_within_directory(path, member_path):
+                        raise Exception("Attempted Path Traversal in Tar File")
+            
+                tar.extractall(path, members, numeric_owner=numeric_owner) 
+                
+            
+            safe_extract(tar, path=str(data_dir), members=subdir_members)
             if progress_bar:
                 progress_bar.close()
     duration_seconds = round(perf_counter() - start_time)
